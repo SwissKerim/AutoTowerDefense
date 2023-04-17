@@ -3,7 +3,8 @@ using UnityEngine;
 
 public abstract class Enemy : MonoBehaviour
 {
-    public Tower TargetTower;
+    [SerializeField] public Tower TargetTower;
+    [SerializeField] public GameController GameController;
     [Header("Base")] [SerializeField] private protected double Hp = 5;
     [SerializeField] private protected double Speed = 1;
     [Header("Attack")] [SerializeField] private protected double Damage = 2;
@@ -14,7 +15,7 @@ public abstract class Enemy : MonoBehaviour
 
     public virtual void Start()
     {
-        TargetTower = GameObject.FindWithTag("Player").GetComponent<Tower>();
+        // TargetTower = GameObject.FindWithTag("Player").GetComponent<Tower>();
     }
 
     public virtual void TakeDamage(double attackDamage)
@@ -24,6 +25,26 @@ public abstract class Enemy : MonoBehaviour
         {
             Destroy(gameObject);
         }
+    }
+
+    public virtual void IncreaseDamage(double factor)
+    {
+        Damage *= (1 + factor);
+    }
+
+    public void IncreaseHp(double hpFactor)
+    {
+        Hp *= (1 + hpFactor);
+    }
+
+    public void IncreaseSpeed(double speedFactor)
+    {
+        Speed *= (1 + speedFactor);
+    }
+
+    public void IncreaseArmor(double armorFactor)
+    {
+        Armor *= (1 + armorFactor);
     }
 
     /// <summary>
@@ -65,8 +86,12 @@ public abstract class Enemy : MonoBehaviour
     /// </summary>
     protected virtual void MoveToEnemy()
     {
+        Debug.Log(TargetTower.IsDead());
+        
         if (TargetTower == null || TargetTower.IsDead())
             return;
+
+        Debug.Log("Move to enemy");
 
         // Move towards the tower until it reaches the attack range
         if (Vector3.Distance(transform.position, TargetTower.transform.position) > AttackRange)
@@ -82,5 +107,6 @@ public abstract class Enemy : MonoBehaviour
     private void OnDestroy()
     {
         TargetTower.EnemiesInRange.Remove(gameObject);
+        GameController.EnemyAlive--;
     }
 }

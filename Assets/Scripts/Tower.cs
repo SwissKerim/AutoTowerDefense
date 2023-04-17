@@ -1,13 +1,11 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 public class Tower : MonoBehaviour
 {
-    public double Hp = 20;
+    public double Hp = 20d;
     public List<GameObject> EnemiesInRange = new List<GameObject>();
 
     public bool IsAttacking = false;
@@ -57,6 +55,12 @@ public class Tower : MonoBehaviour
                 // Get the nearest enemy from the list in a var for easier access
                 var nearestEnemy = GetNearestEnemy();
 
+                if(nearestEnemy == null)
+                {
+                    yield return new WaitForSeconds(0.1f);
+                    continue;
+                }
+                
                 // Face the enemy
                 transform.LookAt(nearestEnemy.transform);
 
@@ -78,7 +82,8 @@ public class Tower : MonoBehaviour
         Hp -= damage;
         if (Hp <= 0)
         {
-            Destroy(gameObject);
+            // Destroy(gameObject);
+            Debug.LogWarning("Tower is dead!");
         }
     }
 
@@ -91,7 +96,7 @@ public class Tower : MonoBehaviour
     {
         // Get the nearest Enemy from the current Tower position
         var nearestEnemy = EnemiesInRange
-            .OrderBy(enemy => Vector3.Distance(transform.position, enemy.transform.position)).FirstOrDefault();
-        return nearestEnemy != null ? nearestEnemy : null;
+            .OrderBy(enemy => enemy != null ? Vector3.Distance(transform.position, enemy.transform.position) : 999).FirstOrDefault();
+        return nearestEnemy;
     }
 }

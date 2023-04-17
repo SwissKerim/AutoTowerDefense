@@ -119,13 +119,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5fc0370ddbcf45cdaf5d17b6a751f075, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TargetTower: {fileID: 0}
+  TargetTower: {fileID: 8338535066896387407, guid: 6015b94ed9806f8498ca4ed80ef963db,
+    type: 3}
+  GameController: {fileID: 3385717426850849449, guid: 4565cad2d634b5345b52386bcb799f8e,
+    type: 3}
   Hp: 5
   Speed: 1
   Damage: 1
   Armor: 0
   AttackSpeedMs: 0
-  AttackRange: 2
+  AttackRange: 1
 --- !u!54 &6863554594996803450
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -149,7 +152,7 @@ Rigidbody:
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
   m_UseGravity: 0
-  m_IsKinematic: 1
+  m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0

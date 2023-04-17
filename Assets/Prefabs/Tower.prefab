@@ -119,8 +119,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 830baf3ab4ed3bb44b9a0023f4984822, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Hp: 20
+  Hp: 200
   EnemiesInRange: []
+  IsAttacking: 0
+  AttackSpeedMs: 1000
+  AttackDamage: 1
+  AttackRangeRadius: 20
   TowerAttackRange: {fileID: 7498405424677404334}
   TowerBullet: {fileID: 6072755918714074722, guid: 48c4ff92d4f7a5a44be756bbc67d07cd,
     type: 3}
@@ -176,7 +180,7 @@ SphereCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Radius: 5
+  m_Radius: 20
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &7498405424677404334
 MonoBehaviour:
