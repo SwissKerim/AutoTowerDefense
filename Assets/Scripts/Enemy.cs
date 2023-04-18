@@ -87,7 +87,7 @@ public abstract class Enemy : MonoBehaviour
     protected virtual void MoveToEnemy()
     {
         Debug.Log(TargetTower.IsDead());
-        
+
         if (TargetTower == null || TargetTower.IsDead())
             return;
 
@@ -107,6 +107,5 @@ public abstract class Enemy : MonoBehaviour
     private void OnDestroy()
     {
         TargetTower.EnemiesInRange.Remove(gameObject);
-        GameController.EnemyAlive--;
     }
 }

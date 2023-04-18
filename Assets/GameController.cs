@@ -1,17 +1,16 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Serialization;
 
 public class GameController : MonoBehaviour
 {
-    public int EnemyAlive = 0;
-
-    public int _waveNumber = 1;
+    public int WaveNumber = 1;
 
     private int _enemyNumber = 0;
     private int _enemyNumberPerWave = 5;
-
 
     // Factors
     private double _enemyNumberPerWaveFactor = 0.25d;
@@ -23,14 +22,19 @@ public class GameController : MonoBehaviour
     private double _enemyArmorFactor = 0.05d;
 
     private const float EnemySpawnIntervalSec = 1f;
-    private const float EnemyWaveIntervalSec = 5f;
+    private const float EnemyWaveIntervalSec = 20f;
     private const float GameLoopIntervalSec = 2f;
 
-    private EnemySpawner _enemySpawner;
+    private EnemySpawner[] _enemySpawner;
+
+    [SerializeField] private TextMeshProUGUI WaveNumberText;
 
     private void Start()
     {
-        _enemySpawner = GetComponentInChildren<EnemySpawner>();
+        WaveNumber = 1;
+        WaveNumberText.text = WaveNumber.ToString();
+        
+        _enemySpawner = GetComponentsInChildren<EnemySpawner>();
         StartCoroutine(SpawnEnemyRoutine());
     }
 
@@ -40,35 +44,43 @@ public class GameController : MonoBehaviour
         {
             if (_enemyNumber < _enemyNumberPerWave)
             {
-                _enemySpawner.SpawnEnemy(_enemyDamageFactor, _enemyHpFactor, _enemyArmorFactor);
-                _enemyNumber++;
-                EnemyAlive++;
-
+                SpawnSuicideEnemy();
                 yield return new WaitForSeconds(EnemySpawnIntervalSec);
             }
 
-            if (EnemyAlive <= 0)
-            {
-                // Next Wave
-                yield return new WaitForSeconds(EnemyWaveIntervalSec);
-                
-                _waveNumber++;
-                
-                // Increase factors every 10 waves
-                if (_waveNumber % 10 == 0)
-                {
-                    IncreaseFactors();
-                }
+            Debug.Log("Next Wave");
 
-                _enemyNumber = 0;
-                EnemyAlive = 0;
-                
-                // Increase the number of enemies per wave by a factor and round it to the nearest integer
-                _enemyNumberPerWave = (int)Math.Round(_enemyNumberPerWave * (1 + _enemyNumberPerWaveFactor));
-            }
-            
-            yield return new WaitForSeconds(GameLoopIntervalSec);
+            // Next Wave
+            IncreaseWave();
+            yield return new WaitForSeconds(EnemyWaveIntervalSec);
         }
+    }
+
+    private void SpawnSuicideEnemy()
+    {
+        Debug.Log("Spawn Suicide Enemy");
+        foreach (EnemySpawner enemySpawner in _enemySpawner)
+        {
+            enemySpawner.SpawnSuicideEnemy(_enemyDamageFactor, _enemyHpFactor, _enemyArmorFactor);
+            _enemyNumber++;
+        }
+    }
+
+    private void IncreaseWave()
+    {
+        WaveNumber++;
+        WaveNumberText.text = WaveNumber.ToString();
+
+        // Increase factors every 10 waves
+        if (WaveNumber % 10 == 0)
+        {
+            IncreaseFactors();
+        }
+
+        _enemyNumber = 0;
+
+        // Increase the number of enemies per wave by a factor and round it to the nearest integer
+        _enemyNumberPerWave = (int)Math.Round(_enemyNumberPerWave * (1 + _enemyNumberPerWaveFactor));
     }
 
     private void IncreaseFactors()
@@ -79,7 +91,6 @@ public class GameController : MonoBehaviour
         _enemyAttackSpeedFactor += 0.01d;
         _enemyAttackRangeFactor += 0.01d;
         _enemyArmorFactor += 0.05d;
-
         _enemyNumberPerWaveFactor += 0.25d;
     }
 }

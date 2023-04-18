@@ -6,26 +6,19 @@ using UnityEngine;
 public class Tower : MonoBehaviour
 {
     public double Hp = 20d;
+    public float AttackDamage { get; private set; } = 1f;
     public List<GameObject> EnemiesInRange = new List<GameObject>();
-
-    public bool IsAttacking = false;
-    public int AttackSpeedMs = 1000;
-    public float AttackDamage = 1f;
-    public float AttackRangeRadius = 20;
+    private bool _isAttacking { get; set; } = false;
+    private int _attackSpeedMs { get; set; } = 1000;
+    private float _attackRangeRadius { get; set; } = 20;
 
     [SerializeField] private TowerAttackRange TowerAttackRange;
     [SerializeField] private GameObject TowerBullet;
 
-    // Start is called before the first frame update
     void Start()
     {
-        TowerAttackRange.AttackRangeCollider.radius = AttackRangeRadius;
+        TowerAttackRange.AttackRangeCollider.radius = _attackRangeRadius;
         StartCoroutine(AttackWhenEnemyInRange());
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
     }
 
     /// <summary>
@@ -50,28 +43,27 @@ public class Tower : MonoBehaviour
         {
             if (EnemiesInRange.Count > 0)
             {
-                IsAttacking = true;
+                _isAttacking = true;
 
                 // Get the nearest enemy from the list in a var for easier access
                 var nearestEnemy = GetNearestEnemy();
 
-                if(nearestEnemy == null)
+                while (nearestEnemy != null)
                 {
-                    yield return new WaitForSeconds(0.1f);
-                    continue;
+                    // Face the enemy
+                    transform.LookAt(nearestEnemy.transform);
+
+                    // Spawn a bullet and let it fly to the enemy
+                    CreateBullet(nearestEnemy);
+
+                    yield return new WaitForSeconds(_attackSpeedMs / 1000);
                 }
-                
-                // Face the enemy
-                transform.LookAt(nearestEnemy.transform);
 
-                // Spawn a bullet and let it fly to the enemy
-                CreateBullet(nearestEnemy);
-
-                yield return new WaitForSeconds(AttackSpeedMs / 1000);
+                yield return new WaitForSeconds(_attackSpeedMs / 1000);
             }
             else
             {
-                IsAttacking = false;
+                _isAttacking = false;
                 yield return new WaitForSeconds(0.1f);
             }
         }
@@ -96,7 +88,8 @@ public class Tower : MonoBehaviour
     {
         // Get the nearest Enemy from the current Tower position
         var nearestEnemy = EnemiesInRange
-            .OrderBy(enemy => enemy != null ? Vector3.Distance(transform.position, enemy.transform.position) : 999).FirstOrDefault();
+            .OrderBy(enemy => enemy != null ? Vector3.Distance(transform.position, enemy.transform.position) : 999)
+            .FirstOrDefault();
         return nearestEnemy;
     }
 }
