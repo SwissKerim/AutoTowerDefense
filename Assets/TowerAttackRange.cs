@@ -14,7 +14,7 @@ public class TowerAttackRange : MonoBehaviour
         _tower = GetComponentInParent<Tower>();
 
         // Draw a circle surrounding the tower
-        DrawCircle(16, AttackRangeCollider.radius);
+        DrawCircle(32, AttackRangeCollider.radius);
     }
 
     // Draw a circle surrounding the tower
